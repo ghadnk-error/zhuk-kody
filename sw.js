@@ -1,4 +1,4 @@
-const CACHE = "zhuk-kody-v1"; // деректер жаңарса, v1 -> v2 деп өзгертіңіз
+const CACHE = "zhuk-kody-v2"; // деректер жаңарса, v2 -> v3 деп өзгертіңіз
 const FILES = ["./", "index.html", "manifest.webmanifest", "icon-192.png", "icon-512.png", "apple-touch-icon.png"];
 self.addEventListener("install", e => {
   e.waitUntil(caches.open(CACHE).then(c => c.addAll(FILES)).then(() => self.skipWaiting()));
