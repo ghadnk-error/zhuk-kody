@@ -3,14 +3,14 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Жүк коды</title>
+<title>Күзетші көмекшісі</title>
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="theme-color" content="#E3F0FB">
 <link rel="icon" type="image/png" href="icon-192.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="Жүк коды">
+<meta name="apple-mobile-web-app-title" content="Күзетші">
 <style>
 :root{
   --bg:#E3F0FB; --top:#FFFFFF; --ink:#1B1B1F; --line:#79747E; --accent:#00BFFF;
@@ -59,6 +59,32 @@ body[data-view="stations"]{--page:var(--bgs)}
 #hs{display:none}
 body[data-view="stations"] #hs{display:block}
 body[data-view="stations"] #hw{display:none}
+#hh{display:none}
+body[data-view="hours"] #hh{display:block}
+body[data-view="hours"] #hw{display:none}
+#v-hours{--ok:#1f7a4d;--warn:#b4531a;--bar:rgba(128,128,128,.28);--hl:rgba(128,128,128,.25)}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) #v-hours{--ok:#4cc58a;--warn:#e8925a}}
+#v-hours .hhd{display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px;margin:0 0 14px}
+#v-hours .httl{font-size:24px;font-weight:700}
+#v-hours button{font:inherit;font-size:16px;font-weight:700;padding:10px 20px;border:1.5px solid #0B57D0;border-radius:999px;background:#0B57D0;color:#fff;cursor:pointer;margin-top:16px}
+#v-hours #pb,#v-hours #h-pb{margin:0;font-size:14px;padding:6px 14px;background:transparent;color:var(--ok);border-color:var(--ok)}
+#v-hours #h-pb[aria-pressed="true"]{background:var(--ok);color:var(--st)}
+#v-hours #h-lo{margin:0;border:0;background:none;color:var(--muted);font-size:14px;text-decoration:underline;padding:6px}
+#v-hours .card{background:var(--st);border-radius:24px;padding:14px 20px;box-shadow:0 1px 4px rgba(0,0,0,.12);margin:0 0 14px;font-size:17px}
+#v-hours .card h2{font-size:20px;margin:0 0 6px}
+#v-hours .card p{font-size:15px;font-weight:400;margin:6px 0 0;line-height:1.4}
+#v-hours .row{display:flex;justify-content:space-between;gap:10px;padding:9px 0;border-bottom:1px solid var(--hl)}
+#v-hours .row:last-of-type{border:0}#v-hours .row b{font-size:20px}
+#v-hours .bar{height:12px;background:var(--bar);border-radius:6px;overflow:hidden;margin:12px 0 4px;position:relative}
+#v-hours .bar i,#v-hours .bar u{position:absolute;left:0;top:0;bottom:0;background:var(--ok)}#v-hours .bar u{opacity:.35}
+#v-hours .days{display:grid;grid-template-columns:repeat(10,1fr);gap:4px;margin-top:10px}
+#v-hours .d{border:1px solid var(--hl);border-radius:6px;text-align:center;font-size:12px;padding:3px 0;line-height:1.3}#v-hours .d span{display:block;color:var(--muted);font-size:10px}
+#v-hours .d.p{border-style:dashed;color:var(--muted)}#v-hours .d.z{opacity:.55}
+#v-hours .chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
+#v-hours .chip{margin:0;font-size:14px;padding:5px 12px;background:var(--st);color:var(--ink);border-color:var(--hl)}
+#v-hours .chip[aria-pressed="true"]{background:var(--ok);border-color:var(--ok);color:var(--st)}
+#v-hours .err{color:var(--warn)}#v-hours .note{font-size:12px;color:var(--muted)}
+#v-hours .pos{color:var(--ok)}#v-hours .neg{color:var(--warn)}
 </style>
 </head>
 <body>
@@ -79,6 +105,11 @@ body[data-view="stations"] #hw{display:none}
   <g transform="translate(370 8) scale(2.6)"><path d="M12 2C8.1 2 5 5.1 5 9c0 5.2 7 13 7 13s7-7.8 7-13c0-3.9-3.1-7-7-7zm0 9.5a2.5 2.5 0 1 1 0-5 2.5 2.5 0 0 1 0 5z"/></g>
   <path d="M181 77C230 60 270 95 310 88S370 80 401 65" fill="none" stroke="currentColor" stroke-width="2" stroke-dasharray="2 6" stroke-linecap="round"/>
 </svg>
+<svg id="hh" viewBox="0 0 540 130" role="img" aria-label="Сағат" fill="currentColor">
+  <circle cx="270" cy="62" r="46" fill="none" stroke="currentColor" stroke-width="9"/>
+  <path d="M270 32v32l22 14" fill="none" stroke="currentColor" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/>
+  <rect x="0" y="116" width="540" height="5"/>
+</svg>
 </header>
 <main>
 <div id="inst" class="inst" hidden><button id="ib" type="button">Басты экранға қосу</button><p id="ih" hidden></p></div>
@@ -96,10 +127,15 @@ body[data-view="stations"] #hw{display:none}
   </div>
   <div id="list2" aria-live="polite"></div>
 </section>
+<section id="v-hours" hidden>
+  <div class="hhd"><div id="h-ttl" class="httl">Менің сағатым</div><button id="h-pb" type="button" aria-pressed="false" hidden>Өткен айлар қорытындысы</button><button id="h-lo" type="button" hidden>Шығу</button></div>
+  <div id="h-app"></div>
+</section>
 </main>
 <nav role="tablist">
   <button id="t-wagons" role="tab" aria-selected="true"><span class="pill"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8 2 4 2.5 4 6v9.5A3.5 3.5 0 0 0 7.5 19L6 20.5V21h2l2-2h4l2 2h2v-.5L16.5 19a3.5 3.5 0 0 0 3.5-3.5V6c0-3.5-4-4-8-4zM7.5 16a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm9 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zM18 11H6V6h12z"/></svg></span>Вагондар</button>
   <button id="t-stations" role="tab" aria-selected="false"><span class="pill"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8zm8.94 3A8.99 8.99 0 0 0 13 3.06V1h-2v2.06A8.99 8.99 0 0 0 3.06 11H1v2h2.06A8.99 8.99 0 0 0 11 20.94V23h2v-2.06A8.99 8.99 0 0 0 20.94 13H23v-2h-2.06zM12 19a7 7 0 1 1 0-14 7 7 0 0 1 0 14z"/></svg></span>Станциялар</button>
+  <button id="t-hours" role="tab" aria-selected="false"><span class="pill"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg></span>Сағат</button>
 </nav>
 <script>
 // [код, күзет (1 = КҮЗЕТТЕ БАР, 0 = КҮЗЕТТЕ ЖОҚ), жүк атауы]
@@ -142,17 +178,19 @@ function render2(){
     (idx.length > shown.length ? '<div class="empty">Тағы ' + (idx.length - shown.length) + ' нәтиже бар. Іздеуді нақтылаңыз.</div>' : "");
 }
 q2.addEventListener("input", render2);
-const vW = document.getElementById("v-wagons"), vS = document.getElementById("v-stations");
-const tW = document.getElementById("t-wagons"), tS = document.getElementById("t-stations");
+const vW = document.getElementById("v-wagons"), vS = document.getElementById("v-stations"), vH = document.getElementById("v-hours");
+const tW = document.getElementById("t-wagons"), tS = document.getElementById("t-stations"), tH = document.getElementById("t-hours");
 function show(view){
-  const st = view === "stations";
-  vW.hidden = st; vS.hidden = !st; document.body.dataset.view = st ? "stations" : "wagons";
-  tW.setAttribute("aria-selected", String(!st)); tS.setAttribute("aria-selected", String(st));
+  const st = view === "stations", hr = view === "hours";
+  vW.hidden = st || hr; vS.hidden = !st; vH.hidden = !hr; document.body.dataset.view = st ? "stations" : hr ? "hours" : "wagons";
+  tW.setAttribute("aria-selected", String(!st && !hr)); tS.setAttribute("aria-selected", String(st)); tH.setAttribute("aria-selected", String(hr));
+  if (hr && window.__hoursInit) window.__hoursInit();
   window.scrollTo(0,0);
 }
 tW.addEventListener("click", () => { location.hash = "wagons"; });
 tS.addEventListener("click", () => { location.hash = "stations"; });
-function route(){ show(location.hash === "#stations" ? "stations" : "wagons"); }
+tH.addEventListener("click", () => { location.hash = "hours"; });
+function route(){ show(location.hash === "#stations" ? "stations" : location.hash === "#hours" ? "hours" : "wagons"); }
 window.addEventListener("hashchange", route);
 route();
 
@@ -171,8 +209,123 @@ if (!standalone){
 }
 window.addEventListener("appinstalled", () => { inst.hidden = true; });
 if ("serviceWorker" in navigator && /^https?:$/.test(location.protocol)){
+  const hadCtl = !!navigator.serviceWorker.controller;
+  navigator.serviceWorker.addEventListener("controllerchange", () => { if (hadCtl && !window.__rl) { window.__rl = 1; location.reload(); } });
   window.addEventListener("load", () => { navigator.serviceWorker.register("sw.js").catch(() => {}); });
 }
+/*HOURS*/
+(function(){
+const API='https://saghat-api.g-had-nk.workers.dev';
+const $=id=>document.getElementById('h-'+id);
+const KZ=['Қаңтар','Ақпан','Наурыз','Сәуір','Мамыр','Маусым','Шілде','Тамыз','Қыркүйек','Қазан','Қараша','Желтоқсан'];
+const fmt=n=>(Math.round(n*10)/10).toString().replace('.',',');
+const sgn=n=>(n>0?'+':n<0?'−':'')+fmt(Math.abs(n));
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const NOW=new Date(),CK=NOW.getFullYear()+'-'+String(NOW.getMonth()+1).padStart(2,'0');
+let TOKEN='',ME=null,CARDS={},CUR=null,PAST=[],STALE=false,sel=-1,showPrev=false;
+try{TOKEN=localStorage.getItem('sg_tok')||''}catch(e){}
+const save=t=>{TOKEN=t;try{t?localStorage.setItem('sg_tok',t):localStorage.removeItem('sg_tok')}catch(e){}};
+async function call(path,body){
+  try{const r=await fetch(API+path,{method:body?'POST':'GET',headers:Object.assign({'content-type':'application/json'},TOKEN?{authorization:'Bearer '+TOKEN}:{}),body:body?JSON.stringify(body):undefined});
+    return{ok:r.ok,s:r.status,j:await r.json().catch(()=>({}))}}catch(e){return{ok:false,s:0,j:{error:'net'}}}
+}
+function loginView(msg){
+  $('pb').hidden=true;$('lo').hidden=true;$('ttl').textContent='Менің сағатым';
+  $('app').innerHTML=`<div class="field"><input id="h-t" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="6" autocomplete="username" placeholder=" "><label for="h-t">Табель №</label></div><div class="field" style="margin-top:16px"><input id="h-p" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="4" autocomplete="current-password" placeholder=" "><label for="h-p">PIN (4 сан)</label></div><button id="h-go" type="button">Кіру</button><p class="err" id="h-msg">${msg||''}</p>`;
+  $('go').onclick=async()=>{
+    const t=$('t').value.trim(),p=$('p').value.trim();
+    if(!t||p.length!==4){$('msg').textContent='Табель нөмірі мен 4 таңбалы PIN енгізіңіз.';return}
+    const r=await call('/api/login',{tab:t,pin:p});
+    if(r.ok){save(r.j.token);start()}
+    else if(r.j.error==='locked')$('msg').textContent=`Тым көп қате енгізілді. ${Math.ceil((r.j.retry_after||1800)/60)} минуттан кейін қайталаңыз немесе PIN қалпына келтіруді сұраңыз.`;
+    else if(r.s===0)$('msg').textContent='Байланыс жоқ. Интернетті тексеріңіз.';
+    else $('msg').textContent='Табель нөмірі немесе PIN қате.';
+  };
+}
+function pinView(){
+  $('pb').hidden=true;$('lo').hidden=false;
+  $('app').innerHTML=`<div class="card"><h2>Жаңа PIN ойлап табыңыз</h2><p class="note">Берілген PIN-ді тек бір рет қолданасыз. 4 сан, 1234 немесе 0000 сияқты оңай емес.</p></div><div class="field"><input id="h-n1" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="4" autocomplete="new-password" placeholder=" "><label for="h-n1">Жаңа PIN</label></div><div class="field" style="margin-top:16px"><input id="h-n2" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="4" autocomplete="new-password" placeholder=" "><label for="h-n2">Қайталаңыз</label></div><button id="h-go" type="button">Сақтау</button><p class="err" id="h-msg"></p>`;
+  $('go').onclick=async()=>{
+    const a=$('n1').value.trim(),b=$('n2').value.trim();
+    if(!/^\d{4}$/.test(a)){$('msg').textContent='PIN дәл 4 сан болуы керек.';return}
+    if(a!==b){$('msg').textContent='Екі PIN сәйкес емес.';return}
+    const r=await call('/api/change-pin',{pin:a});
+    if(r.ok)start();else $('msg').textContent=r.j.error==='weak'?'Бұл PIN тым оңай, басқасын таңдаңыз.':'Қате шықты, қайталаңыз.';
+  };
+}
+async function loadCard(ym){
+  if(CARDS[ym])return CARDS[ym];
+  const r=await call('/api/me?ym='+ym);if(r.ok&&r.j.card&&r.j.ym===ym){CARDS[ym]=r.j.card;return r.j.card}return null;
+}
+async function start(){
+  const r=await call('/api/me');
+  if(r.s===401){save('');return loginView('Қайта кіріңіз.')}
+  if(!r.ok)return loginView('Қате шықты, кейінірек қайталаңыз.');
+  if(r.j.must_change)return pinView();
+  ME=r.j;CARDS={};if(ME.card)CARDS[ME.ym]=ME.card;
+  const ms=ME.months;
+  if(!ms.length){$('app').innerHTML='<div class="card">Сіздің деректеріңіз әлі жарияланбаған.</div>';$('lo').hidden=false;return}
+  const last=ms[ms.length-1];
+  STALE=!ms.some(m=>m.ym===CK)&&last.ym<CK;
+  CUR=STALE?null:(ms.find(m=>m.ym===CK)||last);
+  PAST=ms.filter(m=>m.ym.slice(0,4)===String(NOW.getFullYear())&&m.ym<CK);
+  sel=PAST.length-1;showPrev=false;
+  $('pb').hidden=!PAST.length;$('pb').setAttribute('aria-pressed','false');$('lo').hidden=false;
+  $('ttl').textContent='Менің сағатым ('+(CUR?CUR.name:KZ[NOW.getMonth()])+')';
+  if(CUR)await loadCard(CUR.ym);
+  draw();
+}
+const notes=c=>(c.e8?`<div class="note">8 сағаттық график${c.s8>0?` (${c.s8+1}-күннен)`:''}: күніне 8 сағат, 5 сағаттық күн есептелмейді.</div>`:'')+(c.st?`<div class="note">Жаңа күзетші: норма ${c.st+1}-күннен бастап есептелген.</div>`:'');
+function curHtml(c){
+  const R=x=>c.norm>0?Math.min(100,x/c.norm*100):(x>0?100:0);
+  const cells=c.cal.map((raw,i)=>{const t=typeof raw==='string'?raw:(i>=c.last?'':(raw>0?fmt(raw):'–'));return`<div class="d${i>=c.last?' p':''}${t==='–'?' z':''}"><span>${i+1}</span>${esc(t)}</div>`}).join('');
+  return`<div class="card">
+  <div class="row"><span>Айлық норма</span><b>${fmt(c.norm)} сағ</b></div>${notes(c)}
+  <div class="row"><span>${c.last}-күнге дейін істелген</span><b>${fmt(c.worked)} сағ</b></div>
+  <div class="row"><span>Оның ішінде: осы айда</span><span>${fmt(c.month)} сағ</span></div>
+  ${c.crW?`<div class="row"><span>Оның ішінде: Г, ОС, К күндері</span><span>+${fmt(c.crW)} сағ</span></div>`:''}
+  <div class="row"><span>Оның ішінде: алдыңғы айдан ауысқан</span><span>${c.f>0?'+':''}${fmt(c.f)} сағ</span></div>
+  <div class="row"><span>Нормаға дейін қалды</span><b>${fmt(c.left)} сағ</b></div>
+  <div class="row"><span>Ай соңына болжам</span><b>${fmt(c.proj)} сағ</b></div>
+  <div class="row"><span>Болжам мен норма айырмасы</span><b class="${c.dproj>=0?'pos':'neg'}">${sgn(c.dproj)} сағ</b></div>
+  <div class="row"><span>Түнгі сағат: ${c.last}-күнге дейін</span><b>${fmt(c.nw)} сағ</b></div>
+  <div class="row"><span>Түнгі сағат: ай соңына болжам</span><b>${fmt(c.np)} сағ</b></div>
+  <div class="row"><span>Мейрам күндері істелген</span><b>${fmt(c.h)} сағ</b></div>
+  ${c.el?`<div class="row"><span>Алып жүру (осы айда)</span><b>${fmt(c.e||0)} сағ</b></div><div class="row"><span>Пойыздағы жұмыс (осы айда)</span><b>${fmt(c.tr||0)} рет</b></div><div class="note">Алып жүру мен пойыздағы жұмыс — жеке кестеден, ${c.el}-күнге дейін.</div>`:''}
+  <div class="bar"><u style="width:${R(c.proj)}%"></u><i style="width:${R(c.worked)}%"></i></div>
+  <div class="note">Тұтас — істелген (ауысқан сағатпен), бозғылт — болжам. Болжам: әр ауысымға 22 сағаттан (13 + 9), күзетшінің ауысым кезеңімен.</div>
+  <div class="days">${cells}</div><div class="note">Түнгі (22:00–06:00), мейрам және алып жүру сағаттары жалпы сағаттың ішінде есептелген.</div></div>`;
+}
+function sumHtml(c,m){
+  const d=c.dfin;
+  return`<div class="card"><h2>${m.name} айының қорытындысы</h2>
+  <div class="row"><span>Айлық норма</span><b>${fmt(c.norm)} сағ</b></div>${notes(c)}
+  <div class="row"><span>Істелген (ауысқан сағатпен)</span><b>${fmt(c.worked)} сағ</b></div>
+  <div class="row"><span>${d>=0?'Артық':'Жетпейтін'} сағат</span><b class="${d>=0?'pos':'neg'}">${sgn(d)} сағ</b></div>
+  <div class="row"><span>Түнгі сағат</span><span>${fmt(c.nw)} сағ</span></div>
+  <div class="row"><span>Мейрам күндері істелген</span><span>${fmt(c.h)} сағ</span></div>
+  <div class="row"><span>Алып жүру</span><span>${fmt(c.s)} сағ</span></div>
+  <div class="row"><span>Пойыздағы жұмыс</span><span>${fmt(c.p)} рет</span></div>
+  <div class="note">Түнгі, мейрам, алып жүру және пойыздағы жұмыс сағаттары жалпы сағаттың ішінде есептелген.</div></div>`;
+}
+async function draw(){
+  let h='';
+  if(showPrev){
+    h='<div class="chips">'+PAST.map((m,i)=>`<button type="button" class="chip" data-i="${i}" aria-pressed="${i===sel}">${m.name}</button>`).join('')+'</div>';
+    const m=PAST[sel],c=m&&await loadCard(m.ym);
+    h+=c?sumHtml(c,m):'<div class="card err">Бұл айдың деректері табылмады.</div>';
+  }else if(STALE)h='<div class="card">'+KZ[NOW.getMonth()]+' айының табелі әлі енгізілмеген. Өткен айдың нәтижесін жоғарыдағы батырмамен көре аласыз.</div>';
+  else{const c=CARDS[CUR.ym];h=c?curHtml(c):'<div class="card err">Деректер табылмады.</div>'}
+  $('app').innerHTML=h;
+}
+$('pb').onclick=()=>{showPrev=!showPrev;$('pb').setAttribute('aria-pressed',showPrev);draw()};
+$('lo').onclick=()=>{save('');ME=null;loginView()};
+$('app').addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('button[data-i]');if(b){sel=+b.dataset.i;draw()}});
+let inited=false;
+window.__hoursInit=()=>{if(inited)return;inited=true;TOKEN?start():loginView()};
+if(document.body.dataset.view==='hours')window.__hoursInit();
+})();
+/*ENDHOURS*/
 </script>
 </body>
 </html>
