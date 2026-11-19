@@ -67,8 +67,8 @@ body[data-view="hours"] #hw{display:none}
 #v-hours .hhd{display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px;margin:0 0 14px}
 #v-hours .httl{font-size:24px;font-weight:700}
 #v-hours button{font:inherit;font-size:16px;font-weight:700;padding:10px 20px;border:1.5px solid #0B57D0;border-radius:999px;background:#0B57D0;color:#fff;cursor:pointer;margin-top:16px}
-#v-hours #pb,#v-hours #h-pb{margin:0;font-size:14px;padding:6px 14px;background:transparent;color:var(--ok);border-color:var(--ok)}
-#v-hours #h-pb[aria-pressed="true"]{background:var(--ok);color:var(--st)}
+#v-hours #pb,#v-hours #h-pb,#v-hours #h-vip{margin:0;font-size:14px;padding:6px 14px;background:transparent;color:var(--ok);border-color:var(--ok)}
+#v-hours #h-pb[aria-pressed="true"],#v-hours #h-vip[aria-pressed="true"]{background:var(--ok);color:var(--st)}
 #v-hours #h-lo{margin:0;border:0;background:none;color:var(--muted);font-size:14px;text-decoration:underline;padding:6px}
 #v-hours .card{background:var(--st);border-radius:24px;padding:14px 20px;box-shadow:0 1px 4px rgba(0,0,0,.12);margin:0 0 14px;font-size:17px}
 #v-hours .card h2{font-size:20px;margin:0 0 6px}
@@ -84,6 +84,12 @@ body[data-view="hours"] #hw{display:none}
 #v-hours .chip{margin:0;font-size:14px;padding:5px 12px;background:var(--st);color:var(--ink);border-color:var(--hl)}
 #v-hours .chip[aria-pressed="true"]{background:var(--ok);border-color:var(--ok);color:var(--st)}
 #v-hours .err{color:var(--warn)}#v-hours .note{font-size:12px;color:var(--muted)}
+#v-hours table{border-collapse:collapse;width:100%;font-size:17px}
+#v-hours th,#v-hours td{padding:7px 10px;text-align:right;border-bottom:1px solid var(--hl)}
+#v-hours th:first-child,#v-hours td:first-child{text-align:left;font-weight:700}
+#v-hours thead th{position:sticky;top:0;background:var(--st);font-size:14px;z-index:1}
+#v-hours td.b,#v-hours th.b{background:rgba(70,160,220,.30)}#v-hours td.r,#v-hours th.r{background:rgba(225,60,45,.34)}#v-hours td.g,#v-hours th.g{background:rgba(135,175,60,.36)}
+#v-hours tr.me td:first-child{text-decoration:underline}
 #v-hours .pos{color:var(--ok)}#v-hours .neg{color:var(--warn)}
 </style>
 </head>
@@ -128,7 +134,7 @@ body[data-view="hours"] #hw{display:none}
   <div id="list2" aria-live="polite"></div>
 </section>
 <section id="v-hours" hidden>
-  <div class="hhd"><div id="h-ttl" class="httl">Менің сағатым</div><button id="h-pb" type="button" aria-pressed="false" hidden>Өткен айлар қорытындысы</button><button id="h-lo" type="button" hidden>Шығу</button></div>
+  <div class="hhd"><div id="h-ttl" class="httl">Менің сағатым</div><button id="h-pb" type="button" aria-pressed="false" hidden>Өткен айлар қорытындысы</button><button id="h-vip" type="button" aria-pressed="false" hidden>Барлық күзетші</button><button id="h-lo" type="button" hidden>Шығу</button></div>
   <div id="h-app"></div>
 </section>
 </main>
@@ -222,7 +228,7 @@ const fmt=n=>(Math.round(n*10)/10).toString().replace('.',',');
 const sgn=n=>(n>0?'+':n<0?'−':'')+fmt(Math.abs(n));
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const NOW=new Date(),CK=NOW.getFullYear()+'-'+String(NOW.getMonth()+1).padStart(2,'0');
-let TOKEN='',ME=null,CARDS={},CUR=null,PAST=[],STALE=false,sel=-1,showPrev=false;
+let TOKEN='',ME=null,CARDS={},CUR=null,PAST=[],STALE=false,sel=-1,showPrev=false,showAll=false,asel='';
 try{TOKEN=localStorage.getItem('sg_tok')||''}catch(e){}
 const save=t=>{TOKEN=t;try{t?localStorage.setItem('sg_tok',t):localStorage.removeItem('sg_tok')}catch(e){}};
 async function call(path,body){
@@ -230,7 +236,7 @@ async function call(path,body){
     return{ok:r.ok,s:r.status,j:await r.json().catch(()=>({}))}}catch(e){return{ok:false,s:0,j:{error:'net'}}}
 }
 function loginView(msg){
-  $('pb').hidden=true;$('lo').hidden=true;$('ttl').textContent='Менің сағатым';
+  $('pb').hidden=true;$('vip').hidden=true;$('lo').hidden=true;$('ttl').textContent='Менің сағатым';
   $('app').innerHTML=`<div class="field"><input id="h-t" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="6" autocomplete="username" placeholder=" "><label for="h-t">Табель №</label></div><div class="field" style="margin-top:16px"><input id="h-p" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="4" autocomplete="current-password" placeholder=" "><label for="h-p">PIN (4 сан)</label></div><button id="h-go" type="button">Кіру</button><p class="err" id="h-msg">${msg||''}</p>`;
   $('go').onclick=async()=>{
     const t=$('t').value.trim(),p=$('p').value.trim();
@@ -243,7 +249,7 @@ function loginView(msg){
   };
 }
 function pinView(){
-  $('pb').hidden=true;$('lo').hidden=false;
+  $('pb').hidden=true;$('vip').hidden=true;$('lo').hidden=false;
   $('app').innerHTML=`<div class="card"><h2>Жаңа PIN ойлап табыңыз</h2><p class="note">Берілген PIN-ді тек бір рет қолданасыз. 4 сан, 1234 немесе 0000 сияқты оңай емес.</p></div><div class="field"><input id="h-n1" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="4" autocomplete="new-password" placeholder=" "><label for="h-n1">Жаңа PIN</label></div><div class="field" style="margin-top:16px"><input id="h-n2" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="4" autocomplete="new-password" placeholder=" "><label for="h-n2">Қайталаңыз</label></div><button id="h-go" type="button">Сақтау</button><p class="err" id="h-msg"></p>`;
   $('go').onclick=async()=>{
     const a=$('n1').value.trim(),b=$('n2').value.trim();
@@ -269,7 +275,7 @@ async function start(){
   STALE=!ms.some(m=>m.ym===CK)&&last.ym<CK;
   CUR=STALE?null:(ms.find(m=>m.ym===CK)||last);
   PAST=ms.filter(m=>m.ym.slice(0,4)===String(NOW.getFullYear())&&m.ym<CK);
-  sel=PAST.length-1;showPrev=false;
+  sel=PAST.length-1;showPrev=false;showAll=false;asel=CUR?CUR.ym:'';$('vip').hidden=!ME.vip;$('vip').setAttribute('aria-pressed','false');
   $('pb').hidden=!PAST.length;$('pb').setAttribute('aria-pressed','false');$('lo').hidden=false;
   $('ttl').textContent='Менің сағатым ('+(CUR?CUR.name:KZ[NOW.getMonth()])+')';
   if(CUR)await loadCard(CUR.ym);
@@ -308,7 +314,18 @@ function sumHtml(c,m){
   <div class="row"><span>Пойыздағы жұмыс</span><span>${fmt(c.p)} рет</span></div>
   <div class="note">Түнгі, мейрам, алып жүру және пойыздағы жұмыс сағаттары жалпы сағаттың ішінде есептелген.</div></div>`;
 }
+async function drawAll(){
+  const r=await call('/api/vip'+(asel?'?ym='+asel:''));
+  if(!r.ok){$('app').innerHTML='<div class="card err">Бұл бөлім сізге қолжетімсіз.</div>';return}
+  const j=r.j;asel=j.ym||'';
+  if(!j.rows||!j.rows.length){$('app').innerHTML='<div class="card">Деректер әлі жарияланбаған.</div>';return}
+  const yr=String(NOW.getFullYear());
+  const chips='<div class="chips">'+j.months.filter(m=>m.ym.slice(0,4)===yr).map(m=>`<button type="button" class="chip" data-a="${m.ym}" aria-pressed="${m.ym===j.ym}">${m.name}</button>`).join('')+'</div>';
+  const rows=j.rows.map(([t,w,l,n])=>`<tr${t===ME.tab?' class="me"':''}><td>${esc(t)}</td><td class="b">${fmt(w)}</td><td class="r">${fmt(l)}</td><td class="g">${fmt(n)}</td></tr>`).join('');
+  $('app').innerHTML=chips+`<div class="card" style="padding:0"><table><thead><tr><th>Күзетші</th><th class="b">Істеген</th><th class="r">Істеу керек</th><th class="g">Норма</th></tr></thead><tbody>${rows}</tbody></table></div><div class="note">Күзетшілер табель нөмірімен көрсетілген.${j.last?` Табель ${j.last}-күнге дейін толған.`:''}</div>`;
+}
 async function draw(){
+  if(showAll){await drawAll();return}
   let h='';
   if(showPrev){
     h='<div class="chips">'+PAST.map((m,i)=>`<button type="button" class="chip" data-i="${i}" aria-pressed="${i===sel}">${m.name}</button>`).join('')+'</div>';
@@ -318,9 +335,10 @@ async function draw(){
   else{const c=CARDS[CUR.ym];h=c?curHtml(c):'<div class="card err">Деректер табылмады.</div>'}
   $('app').innerHTML=h;
 }
-$('pb').onclick=()=>{showPrev=!showPrev;$('pb').setAttribute('aria-pressed',showPrev);draw()};
+$('pb').onclick=()=>{showPrev=!showPrev;if(showPrev){showAll=false;$('vip').setAttribute('aria-pressed','false')}$('pb').setAttribute('aria-pressed',showPrev);draw()};
+$('vip').onclick=()=>{showAll=!showAll;if(showAll){showPrev=false;$('pb').setAttribute('aria-pressed','false')}$('vip').setAttribute('aria-pressed',showAll);draw()};
 $('lo').onclick=()=>{save('');ME=null;loginView()};
-$('app').addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('button[data-i]');if(b){sel=+b.dataset.i;draw()}});
+$('app').addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('button[data-i]');if(b){sel=+b.dataset.i;draw()}const a=e.target.closest&&e.target.closest('button[data-a]');if(a){asel=a.dataset.a;draw()}});
 let inited=false;
 window.__hoursInit=()=>{if(inited)return;inited=true;TOKEN?start():loginView()};
 if(document.body.dataset.view==='hours')window.__hoursInit();
