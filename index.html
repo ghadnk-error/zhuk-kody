@@ -83,6 +83,9 @@ body[data-view="hours"] #hw{display:none}
 #v-hours .chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
 #v-hours .chip{margin:0;font-size:14px;padding:5px 12px;background:var(--st);color:var(--ink);border-color:var(--hl)}
 #v-hours .chip[aria-pressed="true"]{background:var(--ok);border-color:var(--ok);color:var(--st)}
+#v-hours .updb[hidden]{display:none}
+.updb{display:flex;align-items:center;justify-content:space-between;gap:12px;border:2px solid var(--ok);font-weight:700}
+#v-hours .updb button{margin:0;padding:8px 16px;white-space:nowrap}
 #v-hours .err{color:var(--warn)}#v-hours .note{font-size:12px;color:var(--muted)}
 #v-hours table{border-collapse:collapse;width:100%;font-size:17px}
 #v-hours th,#v-hours td{padding:7px 10px;text-align:right;border-bottom:1px solid var(--hl)}
@@ -135,6 +138,7 @@ body[data-view="hours"] #hw{display:none}
 </section>
 <section id="v-hours" hidden>
   <div class="hhd"><div id="h-ttl" class="httl">Менің сағатым</div><button id="h-pb" type="button" aria-pressed="false" hidden>Өткен айлар қорытындысы</button><button id="h-vip" type="button" aria-pressed="false" hidden>Барлық күзетші</button><button id="h-lo" type="button" hidden>Шығу</button></div>
+  <div id="h-upd" class="card updb" hidden>Деректер жаңартылды. <button id="h-ub" type="button">Жаңарту</button></div>
   <div id="h-app"></div>
 </section>
 </main>
@@ -228,7 +232,7 @@ const fmt=n=>(Math.round(n*10)/10).toString().replace('.',',');
 const sgn=n=>(n>0?'+':n<0?'−':'')+fmt(Math.abs(n));
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const NOW=new Date(),CK=NOW.getFullYear()+'-'+String(NOW.getMonth()+1).padStart(2,'0');
-let TOKEN='',ME=null,CARDS={},CUR=null,PAST=[],STALE=false,sel=-1,showPrev=false,showAll=false,asel='';
+let TOKEN='',ME=null,CARDS={},CUR=null,PAST=[],STALE=false,sel=-1,showPrev=false,showAll=false,asel='',VER=0,pt=null;
 try{TOKEN=localStorage.getItem('sg_tok')||''}catch(e){}
 const save=t=>{TOKEN=t;try{t?localStorage.setItem('sg_tok',t):localStorage.removeItem('sg_tok')}catch(e){}};
 async function call(path,body){
@@ -269,6 +273,8 @@ async function start(){
   if(!r.ok)return loginView('Қате шықты, кейінірек қайталаңыз.');
   if(r.j.must_change)return pinView();
   ME=r.j;CARDS={};if(ME.card)CARDS[ME.ym]=ME.card;
+  VER=ME.v||0;$('upd').hidden=true;
+  if(!pt){pt=setInterval(chkVer,60000);document.addEventListener('visibilitychange',()=>{if(!document.hidden)chkVer()})}
   const ms=ME.months;
   if(!ms.length){$('app').innerHTML='<div class="card">Сіздің деректеріңіз әлі жарияланбаған.</div>';$('lo').hidden=false;return}
   const last=ms[ms.length-1];
@@ -314,6 +320,12 @@ function sumHtml(c,m){
   <div class="row"><span>Пойыздағы жұмыс</span><span>${fmt(c.p)} рет</span></div>
   <div class="note">Түнгі, мейрам, алып жүру және пойыздағы жұмыс сағаттары жалпы сағаттың ішінде есептелген.</div></div>`;
 }
+async function chkVer(){
+  if(!ME||!TOKEN||document.hidden||!VER)return;
+  const r=await call('/api/ver');
+  if(r.ok&&r.j.v>VER)$('upd').hidden=false;
+}
+window.__hoursCheck=chkVer;
 async function drawAll(){
   const r=await call('/api/vip'+(asel?'?ym='+asel:''));
   if(!r.ok){$('app').innerHTML='<div class="card err">Бұл бөлім сізге қолжетімсіз.</div>';return}
@@ -337,7 +349,8 @@ async function draw(){
 }
 $('pb').onclick=()=>{showPrev=!showPrev;if(showPrev){showAll=false;$('vip').setAttribute('aria-pressed','false')}$('pb').setAttribute('aria-pressed',showPrev);draw()};
 $('vip').onclick=()=>{showAll=!showAll;if(showAll){showPrev=false;$('pb').setAttribute('aria-pressed','false')}$('vip').setAttribute('aria-pressed',showAll);draw()};
-$('lo').onclick=()=>{save('');ME=null;loginView()};
+$('ub').onclick=()=>{$('upd').hidden=true;start()};
+$('lo').onclick=()=>{save('');ME=null;$('upd').hidden=true;loginView()};
 $('app').addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('button[data-i]');if(b){sel=+b.dataset.i;draw()}const a=e.target.closest&&e.target.closest('button[data-a]');if(a){asel=a.dataset.a;draw()}});
 let inited=false;
 window.__hoursInit=()=>{if(inited)return;inited=true;TOKEN?start():loginView()};
