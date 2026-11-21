@@ -1,4 +1,4 @@
-const CACHE = "kuzetshi-v6"; // деректер немесе бет жаңарса, v6 -> v7 деп өзгертіңіз
+const CACHE = "kuzetshi-v7"; // деректер немесе бет жаңарса, v7 -> v8 деп өзгертіңіз
 const FILES = ["./", "index.html", "manifest.webmanifest", "icon-192.png", "icon-512.png", "apple-touch-icon.png"];
 self.addEventListener("install", e => {
   e.waitUntil(caches.open(CACHE).then(c => c.addAll(FILES)).then(() => self.skipWaiting()));

@@ -93,6 +93,8 @@ body[data-view="hours"] #hw{display:none}
 #v-hours thead th{position:sticky;top:0;background:var(--st);font-size:14px;z-index:1}
 #v-hours td.b,#v-hours th.b{background:rgba(70,160,220,.30)}#v-hours td.r,#v-hours th.r{background:rgba(225,60,45,.34)}#v-hours td.g,#v-hours th.g{background:rgba(135,175,60,.36)}
 #v-hours tr.me td:first-child{text-decoration:underline}
+#v-hours .rd{color:#d32f2f}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) #v-hours .rd{color:#ff7b72}}
 #v-hours .pos{color:var(--ok)}#v-hours .neg{color:var(--warn)}
 </style>
 </head>
@@ -195,6 +197,7 @@ function show(view){
   vW.hidden = st || hr; vS.hidden = !st; vH.hidden = !hr; document.body.dataset.view = st ? "stations" : hr ? "hours" : "wagons";
   tW.setAttribute("aria-selected", String(!st && !hr)); tS.setAttribute("aria-selected", String(st)); tH.setAttribute("aria-selected", String(hr));
   if (hr && window.__hoursInit) window.__hoursInit();
+  if (window.__hit) window.__hit(document.body.dataset.view);
   window.scrollTo(0,0);
 }
 tW.addEventListener("click", () => { location.hash = "wagons"; });
@@ -297,9 +300,8 @@ function curHtml(c){
   <div class="row"><span>Оның ішінде: осы айда</span><span>${fmt(c.month)} сағ</span></div>
   ${c.crW?`<div class="row"><span>Оның ішінде: Г, ОС, К күндері</span><span>+${fmt(c.crW)} сағ</span></div>`:''}
   <div class="row"><span>Оның ішінде: алдыңғы айдан ауысқан</span><span>${c.f>0?'+':''}${fmt(c.f)} сағ</span></div>
-  <div class="row"><span>Нормаға дейін қалды</span><b>${fmt(c.left)} сағ</b></div>
+  <div class="row"><span>Нормаға дейін қалды</span><b class="${c.left>0?'rd':'pos'}">${fmt(c.left)} сағ</b></div>
   <div class="row"><span>Ай соңына болжам</span><b>${fmt(c.proj)} сағ</b></div>
-  <div class="row"><span>Болжам мен норма айырмасы</span><b class="${c.dproj>=0?'pos':'neg'}">${sgn(c.dproj)} сағ</b></div>
   <div class="row"><span>Түнгі сағат: ${c.last}-күнге дейін</span><b>${fmt(c.nw)} сағ</b></div>
   <div class="row"><span>Түнгі сағат: ай соңына болжам</span><b>${fmt(c.np)} сағ</b></div>
   <div class="row"><span>Мейрам күндері істелген</span><b>${fmt(c.h)} сағ</b></div>
@@ -357,6 +359,18 @@ window.__hoursInit=()=>{if(inited)return;inited=true;TOKEN?start():loginView()};
 if(document.body.dataset.view==='hours')window.__hoursInit();
 })();
 /*ENDHOURS*/
+/*HITS*/
+(function(){
+  const API='https://saghat-api.g-had-nk.workers.dev';
+  let id='';
+  try{id=localStorage.getItem('sg_dev')||'';if(!/^[0-9a-f]{24}$/.test(id)){id=[...crypto.getRandomValues(new Uint8Array(12))].map(b=>b.toString(16).padStart(2,'0')).join('');localStorage.setItem('sg_dev',id)}}catch(e){return}
+  const last={};
+  window.__hit=v=>{const n=Date.now();if(last[v]&&n-last[v]<180000)return;last[v]=n;
+    try{fetch(API+'/api/hit',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({dev:id,view:v}),keepalive:true}).catch(()=>{})}catch(e){}};
+  document.addEventListener('visibilitychange',()=>{if(!document.hidden)window.__hit(document.body.dataset.view||'wagons')});
+  window.__hit(document.body.dataset.view||'wagons');
+})();
+/*ENDHITS*/
 </script>
 </body>
 </html>
