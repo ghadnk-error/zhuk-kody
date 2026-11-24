@@ -139,7 +139,7 @@ body[data-view="hours"] #hw{display:none}
   <div id="list2" aria-live="polite"></div>
 </section>
 <section id="v-hours" hidden>
-  <div class="hhd"><div id="h-ttl" class="httl">Менің сағатым</div><button id="h-pb" type="button" aria-pressed="false" hidden>Өткен айлар қорытындысы</button><button id="h-vip" type="button" aria-pressed="false" hidden>Барлық күзетші</button><button id="h-lo" type="button" hidden>Шығу</button></div>
+  <div class="hhd"><div id="h-ttl" class="httl">Менің сағатым</div><button id="h-pb" type="button" aria-pressed="false" hidden>Өткен ай қорытындысы</button><button id="h-vip" type="button" aria-pressed="false" hidden>Барлық күзетші</button><button id="h-lo" type="button" hidden>Шығу</button></div>
   <div id="h-upd" class="card updb" hidden>Деректер жаңартылды. <button id="h-ub" type="button">Жаңарту</button></div>
   <div id="h-app"></div>
 </section>
@@ -283,9 +283,9 @@ async function start(){
   const last=ms[ms.length-1];
   STALE=!ms.some(m=>m.ym===CK)&&last.ym<CK;
   CUR=STALE?null:(ms.find(m=>m.ym===CK)||last);
-  PAST=ms.filter(m=>m.ym.slice(0,4)===String(NOW.getFullYear())&&m.ym<CK);
+  PAST=ms.filter(m=>m.ym<CK).slice(-1);
   sel=PAST.length-1;showPrev=false;showAll=false;asel=CUR?CUR.ym:'';$('vip').hidden=!ME.vip;$('vip').setAttribute('aria-pressed','false');
-  $('pb').hidden=!PAST.length;$('pb').setAttribute('aria-pressed','false');$('lo').hidden=false;
+  $('pb').textContent=PAST.length?PAST[0].name+' қорытындысы':'Өткен ай қорытындысы';$('pb').hidden=!PAST.length;$('pb').setAttribute('aria-pressed','false');$('lo').hidden=false;
   $('ttl').textContent='Менің сағатым ('+(CUR?CUR.name:KZ[NOW.getMonth()])+')';
   if(CUR)await loadCard(CUR.ym);
   draw();
@@ -333,8 +333,7 @@ async function drawAll(){
   if(!r.ok){$('app').innerHTML='<div class="card err">Бұл бөлім сізге қолжетімсіз.</div>';return}
   const j=r.j;asel=j.ym||'';
   if(!j.rows||!j.rows.length){$('app').innerHTML='<div class="card">Деректер әлі жарияланбаған.</div>';return}
-  const yr=String(NOW.getFullYear());
-  const chips='<div class="chips">'+j.months.filter(m=>m.ym.slice(0,4)===yr).map(m=>`<button type="button" class="chip" data-a="${m.ym}" aria-pressed="${m.ym===j.ym}">${m.name}</button>`).join('')+'</div>';
+  const chips='<div class="chips">'+j.months.filter(m=>m.ym<=CK).slice(-2).map(m=>`<button type="button" class="chip" data-a="${m.ym}" aria-pressed="${m.ym===j.ym}">${m.name}</button>`).join('')+'</div>';
   const rows=j.rows.map(([t,w,l,n])=>`<tr${t===ME.tab?' class="me"':''}><td>${esc(t)}</td><td class="b">${fmt(w)}</td><td class="r">${fmt(l)}</td><td class="g">${fmt(n)}</td></tr>`).join('');
   $('app').innerHTML=chips+`<div class="card" style="padding:0"><table><thead><tr><th>Күзетші</th><th class="b">Істеген</th><th class="r">Істеу керек</th><th class="g">Норма</th></tr></thead><tbody>${rows}</tbody></table></div><div class="note">Күзетшілер табель нөмірімен көрсетілген.${j.last?` Табель ${j.last}-күнге дейін толған.`:''}</div>`;
 }
@@ -342,7 +341,7 @@ async function draw(){
   if(showAll){await drawAll();return}
   let h='';
   if(showPrev){
-    h='<div class="chips">'+PAST.map((m,i)=>`<button type="button" class="chip" data-i="${i}" aria-pressed="${i===sel}">${m.name}</button>`).join('')+'</div>';
+    h='';
     const m=PAST[sel],c=m&&await loadCard(m.ym);
     h+=c?sumHtml(c,m):'<div class="card err">Бұл айдың деректері табылмады.</div>';
   }else if(STALE)h='<div class="card">'+KZ[NOW.getMonth()]+' айының табелі әлі енгізілмеген. Өткен айдың нәтижесін жоғарыдағы батырмамен көре аласыз.</div>';
