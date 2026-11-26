@@ -13,23 +13,21 @@
 <meta name="apple-mobile-web-app-title" content="Күзетші">
 <style>
 :root{
-  --bg:#E3F0FB; --top:#FFFFFF; --ink:#1B1B1F; --line:#79747E; --accent:#00BFFF;
-  --no:#FDE8EA; --yes:#E8F3E6; --st:#FFFFFF; --bgs:#E6F4E8; --navbg:#EAF6FD; --muted:#49454F;
+  --bg:#eef4fb; --top:#FFFFFF; --ink:#0b2a4a; --line:#8fa9c8; --accent:#1565c0; --t1:#cfe0f7; --t2:#d5efdc; --t3:#fbe7c0; --t4:#e3dcf5; --tx2:#2f4a68; --cy:#d5efdc; --cyt:#124a26; --cn:#fbdcdc; --cnt:#7a1a1a;
+  --no:#fff; --yes:#fff; --st:#FFFFFF; --bgs:#eef4fb; --navbg:#fff; --muted:#4a6585;
   box-sizing:border-box;
   padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
 }
 @media (prefers-color-scheme: dark){
   :root:not([data-theme="light"]){
-    --bg:#10202D; --top:#17232E; --ink:#EEF2F6; --line:#8C9AA6; --accent:#4FD3FF;
-    --no:#4A2227; --yes:#21392A; --st:#1E2D3A; --bgs:#12261A; --navbg:#17232E; --muted:#B8C4CE;
+    --bg:#0f1b2a; --top:#17283b; --ink:#eaf2fb; --line:#5d7894; --accent:#7db4ff; --t1:#1e3a5f; --t2:#1f4a35; --t3:#5a4720; --t4:#3d3563; --tx2:#c4d4e6; --cy:#1d4a2e; --cyt:#8fe3b0; --cn:#5a2427; --cnt:#ffb4b0;
+    --no:#17283b; --yes:#17283b; --st:#17283b; --bgs:#0f1b2a; --navbg:#17283b; --muted:#9db4cc;
   }
 }
 html{scroll-padding-top:env(safe-area-inset-top,0px)}
 *{box-sizing:border-box}
 body{--page:var(--bg);margin:0;background:var(--page);color:var(--ink);font-family:Roboto,system-ui,-apple-system,"Segoe UI",sans-serif;min-height:100vh}
-header{background:var(--top);display:flex;justify-content:center;padding:14px 16px}
-header svg{width:min(280px,70vw);height:auto;color:var(--ink)}
-main{max-width:560px;margin:0 auto;padding:22px 16px 110px}
+main{max-width:560px;margin:0 auto;padding:22px 16px 40px}
 .field{position:relative}
 .field label{position:absolute;left:18px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:20px;pointer-events:none;transition:all .15s;background:transparent;padding:0 6px}
 .field input{width:100%;height:68px;border-radius:28px;border:1.5px solid var(--line);background:transparent;color:var(--ink);font:inherit;font-size:32px;font-weight:700;text-align:center;outline:none;letter-spacing:2px}
@@ -46,22 +44,10 @@ main{max-width:560px;margin:0 auto;padding:22px 16px 110px}
 .card.st{background:var(--st);padding:16px 20px}
 .card.st h2{font-size:21px;margin:0 0 8px;line-height:1.3}
 .card.st p{font-size:19px}
-nav{position:fixed;left:0;right:0;bottom:0;display:flex;background:var(--navbg);padding:8px 8px calc(8px + env(safe-area-inset-bottom,0px));box-shadow:0 -1px 6px rgba(0,0,0,.12);z-index:5}
-nav button{flex:1;background:none;border:0;color:var(--ink);font:inherit;font-size:15px;font-weight:600;display:flex;flex-direction:column;align-items:center;gap:4px;padding:4px 0;cursor:pointer}
-nav button span.pill{display:flex;align-items:center;justify-content:center;width:64px;height:32px;border-radius:16px}
-nav button[aria-selected="true"] span.pill{background:#E8DEF8;color:#1D192B}
-nav svg{width:24px;height:24px}
 .inst{margin-bottom:16px;text-align:center}
 .inst button{background:#0B57D0;color:#fff;border:0;border-radius:24px;padding:12px 22px;font:inherit;font-size:17px;font-weight:700;cursor:pointer}
 .inst p{margin:10px 0 0;font-size:15px;color:var(--muted);line-height:1.4}
 [hidden]{display:none!important}
-body[data-view="stations"]{--page:var(--bgs)}
-#hs{display:none}
-body[data-view="stations"] #hs{display:block}
-body[data-view="stations"] #hw{display:none}
-#hh{display:none}
-body[data-view="hours"] #hh{display:block}
-body[data-view="hours"] #hw{display:none}
 #v-hours{--ok:#1f7a4d;--warn:#b4531a;--bar:rgba(128,128,128,.28);--hl:rgba(128,128,128,.25)}
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]) #v-hours{--ok:#4cc58a;--warn:#e8925a}}
 #v-hours .hhd{display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px;margin:0 0 14px}
@@ -96,12 +82,8 @@ body[data-view="hours"] #hw{display:none}
 #v-hours .rd{color:#d32f2f}
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]) #v-hours .rd{color:#ff7b72}}
 #v-hours .pos{color:var(--ok)}#v-hours .neg{color:var(--warn)}
-#hc{display:none}
-body[data-view="calc"] #hc{display:block}
-body[data-view="calc"] #hw{display:none}
 #v-calc{--ok:#1f7a4d;--warn:#b4531a;--hl:rgba(128,128,128,.25)}
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]) #v-calc{--ok:#4cc58a;--warn:#e8925a}}
-#v-calc .ctl{font-size:24px;font-weight:700;margin:0 0 14px}
 #v-calc .cb{background:var(--st);border-radius:24px;padding:14px 20px;box-shadow:0 1px 4px rgba(0,0,0,.12);margin:0 0 14px;font-size:17px}
 #v-calc .cb.rest{border:1.5px dashed var(--line)}
 #v-calc h2{font-size:18px;margin:0 0 8px}
@@ -122,41 +104,34 @@ body[data-view="calc"] #hw{display:none}
 #v-calc .ct{overflow-x:auto}
 #v-calc table{border-collapse:collapse;width:100%;font-size:15px;margin-top:10px}
 #v-calc td,#v-calc th{padding:6px 4px;border-bottom:1px solid var(--hl);text-align:left;white-space:nowrap}
+.bar{display:flex;align-items:center;gap:12px;margin:0 0 16px;font-size:22px;font-weight:700}
+.bk{width:44px;height:44px;flex:none;border-radius:50%;background:var(--st);color:var(--ink);display:flex;align-items:center;justify-content:center;box-shadow:0 1px 4px rgba(0,0,0,.15);text-decoration:none}
+.ttl0{padding:8px 0 6px;font-size:28px;font-weight:700}.ttl0 small{display:block;font-size:15px;font-weight:500;color:var(--muted);margin-top:4px}
+.g{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:12px}
+#home-g[data-vip="0"] .tile:nth-child(3){grid-column:1/-1;min-height:150px}
+.tile{display:flex;flex-direction:column;justify-content:space-between;min-height:200px;padding:18px;border-radius:28px;color:var(--ink);text-decoration:none}
+.tile svg{width:44px;height:44px}
+.tile b{display:block;font-size:22px;margin-bottom:6px}
+.tile>div>span{display:block;font-size:14px;line-height:1.35;color:var(--tx2)}
+.tile .vip{display:inline-block;margin-left:6px;padding:2px 8px;border-radius:8px;background:var(--ink);color:var(--bg);font-size:11px;vertical-align:middle}
+.cs{display:inline-block;padding:5px 14px;border-radius:12px;font-size:15px}
+.cs.y{background:var(--cy);color:var(--cyt)}.cs.n{background:var(--cn);color:var(--cnt)}
 </style>
 </head>
 <body>
-<header>
-<svg id="hw" viewBox="0 0 540 130" role="img" aria-label="Вагондар" fill="currentColor">
-  <rect x="4" y="30" width="108" height="64" rx="3"/><rect x="14" y="40" width="88" height="40" fill="var(--top)"/>
-  <rect x="150" y="14" width="212" height="80" rx="3"/><rect x="226" y="30" width="70" height="46" fill="var(--top)"/>
-  <rect x="258" y="30" width="6" height="46"/>
-  <rect x="396" y="34" width="136" height="60" rx="30"/><rect x="440" y="16" width="36" height="20"/>
-  <path d="M424 46c8 12 12 18 12 24a12 12 0 0 1-24 0c0-6 4-12 12-24z" fill="var(--top)"/>
-  <g><circle cx="40" cy="108" r="10"/><circle cx="80" cy="108" r="10"/>
-  <circle cx="190" cy="108" r="10"/><circle cx="230" cy="108" r="10"/><circle cx="290" cy="108" r="10"/><circle cx="330" cy="108" r="10"/>
-  <circle cx="440" cy="108" r="10"/><circle cx="490" cy="108" r="10"/></g>
-  <rect x="0" y="116" width="540" height="5"/>
-</svg>
-<svg id="hs" viewBox="0 0 540 130" role="img" aria-label="Станциялар" fill="currentColor">
-  <g transform="translate(150 20) scale(2.6)"><path d="M12 2C8.1 2 5 5.1 5 9c0 5.2 7 13 7 13s7-7.8 7-13c0-3.9-3.1-7-7-7zm0 9.5a2.5 2.5 0 1 1 0-5 2.5 2.5 0 0 1 0 5z"/></g>
-  <g transform="translate(370 8) scale(2.6)"><path d="M12 2C8.1 2 5 5.1 5 9c0 5.2 7 13 7 13s7-7.8 7-13c0-3.9-3.1-7-7-7zm0 9.5a2.5 2.5 0 1 1 0-5 2.5 2.5 0 0 1 0 5z"/></g>
-  <path d="M181 77C230 60 270 95 310 88S370 80 401 65" fill="none" stroke="currentColor" stroke-width="2" stroke-dasharray="2 6" stroke-linecap="round"/>
-</svg>
-<svg id="hh" viewBox="0 0 540 130" role="img" aria-label="Сағат" fill="currentColor">
-  <circle cx="270" cy="62" r="46" fill="none" stroke="currentColor" stroke-width="9"/>
-  <path d="M270 32v32l22 14" fill="none" stroke="currentColor" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/>
-  <rect x="0" y="116" width="540" height="5"/>
-</svg>
-<svg id="hc" viewBox="0 0 540 130" role="img" aria-label="Есептегіш" fill="currentColor">
-  <rect x="226" y="10" width="88" height="100" rx="12" fill="none" stroke="currentColor" stroke-width="9"/>
-  <rect x="240" y="24" width="60" height="24" rx="4"/>
-  <g><circle cx="248" cy="66" r="5"/><circle cx="270" cy="66" r="5"/><circle cx="292" cy="66" r="5"/><circle cx="248" cy="82" r="5"/><circle cx="270" cy="82" r="5"/><circle cx="292" cy="82" r="5"/><circle cx="248" cy="98" r="5"/><circle cx="270" cy="98" r="5"/><circle cx="292" cy="98" r="5"/></g>
-  <rect x="0" y="116" width="540" height="5"/>
-</svg>
-</header>
 <main>
 <div id="inst" class="inst" hidden><button id="ib" type="button">Басты экранға қосу</button><p id="ih" hidden></p></div>
-<section id="v-wagons">
+<section id="v-home">
+<div class="ttl0">Күзетші көмекшісі<small>Бөлімді таңдаңыз</small></div>
+<div class="g" id="home-g" data-vip="0">
+<a class="tile" href="#wagons" style="background:var(--t1)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="5" width="18" height="11" rx="2"></rect><circle cx="8" cy="19" r="1.5"></circle><circle cx="16" cy="19" r="1.5"></circle></svg><div><b>Вагондар</b><span>Жүк коды бойынша күзетті тексеру</span></div></a>
+<a class="tile" href="#stations" style="background:var(--t2)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 21s7-6.5 7-12a7 7 0 0 0-14 0c0 5.5 7 12 7 12z"></path><circle cx="12" cy="9" r="2.5"></circle></svg><div><b>Станциялар</b><span>Атауы немесе коды бойынша іздеу</span></div></a>
+<a class="tile" href="#hours" style="background:var(--t3)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg><div><b>Сағат</b><span>Менің сағатым және норма</span></div></a>
+<a class="tile" id="t-calc" href="#calc" style="background:var(--t4)" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="5" y="3" width="14" height="18" rx="2"></rect><path d="M8 7h8M8 12h2M14 12h2M8 16h2M14 16h2"></path></svg><div><b>Есептегіш<span class="vip">VIP</span></b><span>Маршрут бойынша жұмыс сағатын есептеу</span></div></a>
+</div>
+</section>
+<section id="v-wagons" hidden>
+<div class="bar"><a class="bk" href="#home" aria-label="Артқа"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M15 5l-7 7 7 7"></path></svg></a>Вагондар</div>
   <div class="field">
     <input id="q" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="5" autocomplete="off" placeholder=" " aria-label="Жүк кодын енгізіңіз">
     <label for="q">Жүк кодын енгізіңіз</label>
@@ -164,6 +139,7 @@ body[data-view="calc"] #hw{display:none}
   <div id="list" aria-live="polite"></div>
 </section>
 <section id="v-stations" hidden>
+<div class="bar"><a class="bk" href="#home" aria-label="Артқа"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M15 5l-7 7 7 7"></path></svg></a>Станциялар</div>
   <div class="field s">
     <input id="q2" type="text" autocomplete="off" placeholder=" " aria-label="Станция атауын немесе кодын енгізіңіз">
     <label for="q2">Станция атауын немесе кодын енгізіңіз</label>
@@ -171,12 +147,13 @@ body[data-view="calc"] #hw{display:none}
   <div id="list2" aria-live="polite"></div>
 </section>
 <section id="v-hours" hidden>
+<div class="bar"><a class="bk" href="#home" aria-label="Артқа"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M15 5l-7 7 7 7"></path></svg></a>Сағат</div>
   <div class="hhd"><div id="h-ttl" class="httl">Менің сағатым</div><button id="h-pb" type="button" aria-pressed="false" hidden>Өткен ай қорытындысы</button><button id="h-vip" type="button" aria-pressed="false" hidden>Барлық күзетші</button><button id="h-lo" type="button" hidden>Шығу</button></div>
   <div id="h-upd" class="card updb" hidden>Деректер жаңартылды. <button id="h-ub" type="button">Жаңарту</button></div>
   <div id="h-app"></div>
 </section>
 <section id="v-calc" hidden>
-  <div class="ctl">Маршрут есептегіш</div>
+<div class="bar"><a class="bk" href="#home" aria-label="Артқа"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M15 5l-7 7 7 7"></path></svg></a>Маршрут есептегіш</div>
   <div class="cb"><label>Маршрут ашылды (ауысым басталды)<input type="time" id="c-start"></label></div>
   <div id="c-legs"></div>
   <div class="cr"><button id="c-add" type="button">+ Жол қосу</button><button id="c-del" type="button" class="g">− Соңғысын өшіру</button></div>
@@ -184,12 +161,6 @@ body[data-view="calc"] #hw{display:none}
   <div class="cb" id="c-res"></div>
 </section>
 </main>
-<nav role="tablist">
-  <button id="t-wagons" role="tab" aria-selected="true"><span class="pill"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8 2 4 2.5 4 6v9.5A3.5 3.5 0 0 0 7.5 19L6 20.5V21h2l2-2h4l2 2h2v-.5L16.5 19a3.5 3.5 0 0 0 3.5-3.5V6c0-3.5-4-4-8-4zM7.5 16a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm9 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zM18 11H6V6h12z"/></svg></span>Вагондар</button>
-  <button id="t-stations" role="tab" aria-selected="false"><span class="pill"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8zm8.94 3A8.99 8.99 0 0 0 13 3.06V1h-2v2.06A8.99 8.99 0 0 0 3.06 11H1v2h2.06A8.99 8.99 0 0 0 11 20.94V23h2v-2.06A8.99 8.99 0 0 0 20.94 13H23v-2h-2.06zM12 19a7 7 0 1 1 0-14 7 7 0 0 1 0 14z"/></svg></span>Станциялар</button>
-  <button id="t-hours" role="tab" aria-selected="false"><span class="pill"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg></span>Сағат</button>
-  <button id="t-calc" role="tab" aria-selected="false" hidden><span class="pill"><svg viewBox="0 0 24 24" fill="currentColor"><path fill-rule="evenodd" d="M7 2h10a2 2 0 0 1 2 2v16a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2zm0 2v4h10V4H7zM8 10a1 1 0 1 0 0 2 1 1 0 0 0 0-2zm4 0a1 1 0 1 0 0 2 1 1 0 0 0 0-2zm4 0a1 1 0 1 0 0 2 1 1 0 0 0 0-2zM8 14a1 1 0 1 0 0 2 1 1 0 0 0 0-2zm4 0a1 1 0 1 0 0 2 1 1 0 0 0 0-2zm4 0a1 1 0 1 0 0 2 1 1 0 0 0 0-2zM8 18a1 1 0 1 0 0 2 1 1 0 0 0 0-2zm4 0a1 1 0 1 0 0 2 1 1 0 0 0 0-2zm4 0a1 1 0 1 0 0 2 1 1 0 0 0 0-2z"/></svg></span>Есептегіш</button>
-</nav>
 <script>
 // [код, күзет (1 = КҮЗЕТТЕ БАР, 0 = КҮЗЕТТЕ ЖОҚ), жүк атауы]
 let DATA = [];
@@ -207,7 +178,7 @@ function render(){
   }
   list.innerHTML = hits.map(([c,g,t]) =>
     '<div class="card ' + (g ? "yes" : "no") + '"><h2>Код: ' + esc(c) + '</h2>' +
-    '<p>Күзет: ' + (g ? "КҮЗЕТТЕ БАР" : "КҮЗЕТТЕ ЖОҚ") + '</p>' +
+    '<p><span class="cs ' + (g ? "y" : "n") + '">' + (g ? "КҮЗЕТТЕ БАР" : "КҮЗЕТТЕ ЖОҚ") + '</span></p>' +
     '<p>Мәлімет: ' + esc(t) + '</p></div>').join("") +
     (all.length > hits.length ? '<div class="empty">Тағы ' + (all.length - hits.length) + ' нәтиже бар. Кодтың келесі цифрларын енгізіңіз.</div>' : "");
 }
@@ -233,25 +204,21 @@ function render2(){
     (idx.length > shown.length ? '<div class="empty">Тағы ' + (idx.length - shown.length) + ' нәтиже бар. Іздеуді нақтылаңыз.</div>' : "");
 }
 q2.addEventListener("input", render2);
-const vW = document.getElementById("v-wagons"), vS = document.getElementById("v-stations"), vH = document.getElementById("v-hours"), vC = document.getElementById("v-calc");
-const tW = document.getElementById("t-wagons"), tS = document.getElementById("t-stations"), tH = document.getElementById("t-hours"), tC = document.getElementById("t-calc");
+const V = {home:document.getElementById("v-home"), wagons:document.getElementById("v-wagons"), stations:document.getElementById("v-stations"), hours:document.getElementById("v-hours"), calc:document.getElementById("v-calc")};
+const tC = document.getElementById("t-calc"), hg = document.getElementById("home-g");
 let vipOn = false; try { vipOn = localStorage.getItem("sg_vip") === "1"; } catch(e){}
-tC.hidden = !vipOn;
-function setVip(on){ vipOn = !!on; tC.hidden = !vipOn; try { vipOn ? localStorage.setItem("sg_vip","1") : localStorage.removeItem("sg_vip"); } catch(e){} if (!vipOn && document.body.dataset.view === "calc") location.hash = "wagons"; }
+function vipUi(){ tC.hidden = !vipOn; hg.dataset.vip = vipOn ? "1" : "0"; }
+vipUi();
+function setVip(on){ vipOn = !!on; vipUi(); try { vipOn ? localStorage.setItem("sg_vip","1") : localStorage.removeItem("sg_vip"); } catch(e){} if (!vipOn && document.body.dataset.view === "calc") location.hash = "home"; }
 window.__setVip = setVip;
 function show(view){
-  const st = view === "stations", hr = view === "hours", cc = view === "calc";
-  vW.hidden = st || hr || cc; vS.hidden = !st; vH.hidden = !hr; vC.hidden = !cc; document.body.dataset.view = st ? "stations" : hr ? "hours" : cc ? "calc" : "wagons";
-  tW.setAttribute("aria-selected", String(!st && !hr && !cc)); tS.setAttribute("aria-selected", String(st)); tH.setAttribute("aria-selected", String(hr)); tC.setAttribute("aria-selected", String(cc));
-  if (hr && window.__hoursInit) window.__hoursInit();
-  if (window.__hit && !cc) window.__hit(document.body.dataset.view);
+  for (const k in V) V[k].hidden = k !== view;
+  document.body.dataset.view = view;
+  if (view === "hours" && window.__hoursInit) window.__hoursInit();
+  if (window.__hit && view !== "calc" && view !== "home") window.__hit(view);
   window.scrollTo(0,0);
 }
-tW.addEventListener("click", () => { location.hash = "wagons"; });
-tS.addEventListener("click", () => { location.hash = "stations"; });
-tH.addEventListener("click", () => { location.hash = "hours"; });
-tC.addEventListener("click", () => { location.hash = "calc"; });
-function route(){ show(location.hash === "#stations" ? "stations" : location.hash === "#hours" ? "hours" : location.hash === "#calc" && vipOn ? "calc" : "wagons"); }
+function route(){ const h = location.hash.slice(1); show(h === "calc" && vipOn ? "calc" : (h === "wagons" || h === "stations" || h === "hours") ? h : "home"); }
 window.addEventListener("hashchange", route);
 route();
 /*CATALOG*/
@@ -520,7 +487,7 @@ renderLegs();calc();
   let id='';
   try{id=localStorage.getItem('sg_dev')||'';if(!/^[0-9a-f]{24}$/.test(id)){id=[...crypto.getRandomValues(new Uint8Array(12))].map(b=>b.toString(16).padStart(2,'0')).join('');localStorage.setItem('sg_dev',id)}}catch(e){return}
   const last={};
-  window.__hit=v=>{if(v==='calc')return;const n=Date.now();if(last[v]&&n-last[v]<180000)return;last[v]=n;
+  window.__hit=v=>{if(v==='calc'||v==='home')return;const n=Date.now();if(last[v]&&n-last[v]<180000)return;last[v]=n;
     try{fetch(API+'/api/hit',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({dev:id,view:v}),keepalive:true}).catch(()=>{})}catch(e){}};
   document.addEventListener('visibilitychange',()=>{if(!document.hidden)window.__hit(document.body.dataset.view||'wagons')});
   window.__hit(document.body.dataset.view||'wagons');
