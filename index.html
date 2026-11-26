@@ -157,8 +157,7 @@ main{max-width:560px;margin:0 auto;padding:22px 16px 40px}
   <div class="cb"><label>Маршрут ашылды (ауысым басталды)<input type="time" id="c-start"></label></div>
   <div id="c-legs"></div>
   <div class="cr"><button id="c-add" type="button">+ Жол қосу</button><button id="c-del" type="button" class="g">− Соңғысын өшіру</button></div>
-  <details class="cb"><summary>Параметрлер</summary><div class="cg" style="margin-top:10px"><label>Демалыстың есептелетін үлесі (%)<input type="number" id="c-rk" value="50" min="0" max="100"></label><label>Бос құрам үлесі (%)<input type="number" id="c-ek" value="50" min="0" max="100"></label></div></details>
-  <div class="cb" id="c-res"></div>
+    <div class="cb" id="c-res"></div>
 </section>
 </main>
 <script>
@@ -349,7 +348,6 @@ function curHtml(c){
   ${c.crW?`<div class="row"><span>Оның ішінде: Г, ОС, К күндері</span><span>+${fmt(c.crW)} сағ</span></div>`:''}
   <div class="row"><span>Оның ішінде: алдыңғы айдан ауысқан</span><span>${c.f>0?'+':''}${fmt(c.f)} сағ</span></div>
   <div class="row"><span>Нормаға дейін қалды</span><b class="${c.left>0?'rd':'pos'}">${fmt(c.left)} сағ</b></div>
-  <div class="row"><span>Ай соңына болжам</span><b>${fmt(c.proj)} сағ</b></div>
   <div class="row"><span>Түнгі сағат: ${c.last}-күнге дейін</span><b>${fmt(c.nw)} сағ</b></div>
   <div class="row"><span>Түнгі сағат: ай соңына болжам</span><b>${fmt(c.np)} сағ</b></div>
   <div class="row"><span>Мейрам күндері істелген</span><b>${fmt(c.h)} сағ</b></div>
@@ -423,7 +421,7 @@ function renderLegs(){
   `<div class="cb"><h2>${i+1}-жол</h2><div class="cg">${KEYS.filter(([k])=>!l.e||k==='d'||k==='a').map(([k,n])=>`<label>${n}<input type="time" data-i="${i}" data-k="${k}" value="${l[k]||''}"></label>`).join('')}</div><label class="chk"><input type="checkbox" data-i="${i}" data-k="e" ${l.e?'checked':''}> Резервпен жүрді (құрамсыз, бос)</label></div>`).join('');
 }
 function calc(){
-  const rk=C($('rk').value),ek=C($('ek').value);
+  const rk=.5,ek=.5;
   const ev=[$('start').value];
   legs.forEach(l=>ev.push(l.e?l.d:l.q,l.d,l.a,l.e?l.a:l.h));
   if(ev.some(x=>!x)){$('res').innerHTML='<p class="cmu">Барлық уақытты толтырыңыз.</p>';return}
@@ -474,7 +472,6 @@ $('legs').addEventListener('input',e=>{
   const i=e.target.dataset.i,k=e.target.dataset.k;if(i==null)return;
   legs[i][k]=k==='e'?e.target.checked:e.target.value;if(k==='e')renderLegs();calc();
 });
-['rk','ek'].forEach(s=>$(s).addEventListener('input',calc));
 $('start').addEventListener('change',()=>{legs.length=0;legs.push(blank());renderLegs();calc()});
 $('add').onclick=()=>{legs.push(blank());renderLegs();calc()};
 $('del').onclick=()=>{if(legs.length>1){legs.pop();renderLegs();calc()}};
