@@ -190,6 +190,8 @@ function render(){
     (all.length > hits.length ? '<div class="empty">Тағы ' + (all.length - hits.length) + ' нәтиже бар. Кодтың келесі цифрларын енгізіңіз.</div>' : "");
 }
 q.addEventListener("input", render);
+let prevV = "";
+q.addEventListener("input", () => { const v = q.value.replace(/\D/g,""); if (v.length === 5 && (prevV.length < 5 || (prevV.length === 5 && v !== prevV)) && DATA.length && window.__chk) window.__chk(DATA.some(r => r[0] === v)); prevV = v; });
 // [станция атауы, станция коды]
 let ST = [];
 let STL = [];
@@ -502,6 +504,17 @@ renderLegs();calc();
     try{fetch(API+'/api/hit',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({dev:id,view:v}),keepalive:true}).catch(()=>{})}catch(e){}};
   document.addEventListener('visibilitychange',()=>{if(!document.hidden)window.__hit(document.body.dataset.view||'wagons')});
   window.__hit(document.body.dataset.view||'wagons');
+  let qf=0,qn=0,tm=0,busy=false;
+  try{const o=JSON.parse(localStorage.getItem('sg_chk')||'{}');qf=o.f|0;qn=o.n|0}catch(e){}
+  const keep=()=>{try{localStorage.setItem('sg_chk',JSON.stringify({f:qf,n:qn}))}catch(e){}};
+  function flush(){
+    if(busy||(!qf&&!qn))return;busy=true;const f=Math.min(qf,500),n=Math.min(qn,500);
+    fetch(API+'/api/chk',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({dev:id,f,n}),keepalive:true})
+      .then(r=>{if(r.ok||r.status===400){qf-=f;qn-=n;keep()}}).catch(()=>{}).finally(()=>{busy=false});
+  }
+  window.__chk=found=>{found?qf++:qn++;keep();clearTimeout(tm);tm=setTimeout(flush,2000)};
+  document.addEventListener('visibilitychange',()=>{if(!document.hidden)flush()});
+  setTimeout(flush,3000);
 })();
 /*ENDHITS*/
 </script>
