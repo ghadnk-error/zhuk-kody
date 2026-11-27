@@ -214,11 +214,17 @@ function show(view){
   for (const k in V) V[k].hidden = k !== view;
   document.body.dataset.view = view;
   if (view === "hours" && window.__hoursInit) window.__hoursInit();
-  if (window.__hit && view !== "calc" && view !== "home") window.__hit(view);
+  if (window.__hit && view !== "calc") window.__hit(view);
   window.scrollTo(0,0);
 }
 function route(){ const h = location.hash.slice(1); show(h === "calc" && vipOn ? "calc" : (h === "wagons" || h === "stations" || h === "hours") ? h : "home"); }
 window.addEventListener("hashchange", route);
+if (location.hash) history.replaceState(null, "", location.pathname + location.search);
+let hiddenAt = 0;
+document.addEventListener("visibilitychange", () => {
+  if (document.hidden) { hiddenAt = Date.now(); return; }
+  if (hiddenAt && Date.now() - hiddenAt > 120000 && document.body.dataset.view !== "home") { history.replaceState(null, "", location.pathname + location.search); show("home"); }
+});
 route();
 /*CATALOG*/
 const CAT_API = "https://saghat-api.g-had-nk.workers.dev";
@@ -484,7 +490,7 @@ renderLegs();calc();
   let id='';
   try{id=localStorage.getItem('sg_dev')||'';if(!/^[0-9a-f]{24}$/.test(id)){id=[...crypto.getRandomValues(new Uint8Array(12))].map(b=>b.toString(16).padStart(2,'0')).join('');localStorage.setItem('sg_dev',id)}}catch(e){return}
   const last={};
-  window.__hit=v=>{if(v==='calc'||v==='home')return;const n=Date.now();if(last[v]&&n-last[v]<180000)return;last[v]=n;
+  window.__hit=v=>{if(v==='calc')return;const n=Date.now();if(last[v]&&n-last[v]<180000)return;last[v]=n;
     try{fetch(API+'/api/hit',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({dev:id,view:v}),keepalive:true}).catch(()=>{})}catch(e){}};
   document.addEventListener('visibilitychange',()=>{if(!document.hidden)window.__hit(document.body.dataset.view||'wagons')});
   window.__hit(document.body.dataset.view||'wagons');
